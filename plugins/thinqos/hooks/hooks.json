@@ -1,0 +1,79 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/harvest.sh prime-session",
+            "timeout": 10,
+            "statusMessage": "🧠 thinqOS ▸ recalling your Mind…"
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/harvest.sh resume",
+            "timeout": 10,
+            "statusMessage": "🧠 thinqOS ▸ picking up where you left off…"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/harvest.sh prime",
+            "timeout": 10,
+            "statusMessage": "🧠 thinqOS ▸ recalling your Mind…"
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/harvest.sh anti-fab",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/capture-incremental.sh",
+            "timeout": 30,
+            "statusMessage": "🧠 thinqOS ▸ harvesting this session…"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/harvest.sh capture",
+            "timeout": 30,
+            "async": true,
+            "statusMessage": "🧠 thinqOS ▸ harvesting this session…"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/harvest.sh guardrail-check",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

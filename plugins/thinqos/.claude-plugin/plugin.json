@@ -1,0 +1,22 @@
+{
+  "name": "thinqos",
+  "displayName": "thinqOS Mind",
+  "version": "0.1.0",
+  "description": "thinqOS Mind for Claude Code: reflexive memory priming, cross-machine resume, session capture into your Mind, and the thinqOS MCP tools. Requires the thinqos-harvest engine (uv tool install thinqos-harvest).",
+  "author": { "name": "AI4Outcomes", "email": "support@thinqos.com" },
+  "homepage": "https://thinqos.com",
+  "repository": "https://github.com/AI4Outcomes/thinqos-plugins",
+  "license": "MIT",
+  "keywords": ["memory", "thinqos", "mind", "capture", "recall"],
+  "hooks": "./hooks/hooks.json",
+  "mcpServers": "./.mcp.json",
+  "userConfig": {
+    "pat": {
+      "type": "string",
+      "title": "thinqOS API key (tq_...)",
+      "description": "Personal access token for the thinqOS MCP connection. Create one at thinqos.com under Settings.",
+      "sensitive": true,
+      "required": true
+    }
+  }
+}

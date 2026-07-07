@@ -1,0 +1,12 @@
+{
+  "name": "thinqos-plugins",
+  "owner": { "name": "AI4Outcomes" },
+  "description": "Official AI4Outcomes plugin marketplace: thinqOS Mind integration for Claude Code.",
+  "plugins": [
+    {
+      "name": "thinqos",
+      "source": "./plugins/thinqos",
+      "description": "thinqOS Mind for Claude Code: reflexive memory priming, cross-machine resume, session capture into your Mind, and the thinqOS MCP tools."
+    }
+  ]
+}
