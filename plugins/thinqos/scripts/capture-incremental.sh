@@ -22,7 +22,11 @@ if [ -n "$iv" ]; then
         stamp="$HOME/.config/thinqos-harvest/debounce/$digest"
         if [ -n "$digest" ] && [ -f "$stamp" ]; then
             now=$(date +%s)
-            mt=$(stat -f %m "$stamp" 2>/dev/null || stat -c %Y "$stamp" 2>/dev/null)
+            # GNU form FIRST: on Linux `stat -f %m` can succeed and print a
+            # MOUNT POINT (non-numeric, exit 0, coreutils-version-dependent),
+            # which would mask the BSD fallback. `stat -c` errors cleanly on
+            # BSD/macOS, so this order is unambiguous on both.
+            mt=$(stat -c %Y "$stamp" 2>/dev/null || stat -f %m "$stamp" 2>/dev/null)
             case "$mt" in
                 ''|*[!0-9]*) mt="" ;;
             esac
