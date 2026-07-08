@@ -33,4 +33,14 @@ if [ "$kind" = "prime-session" ]; then
     exec "$BIN" hook prime "$@"
 fi
 
+# Fail-open on engine/plugin version skew. The plugin (marketplace autoUpdate)
+# and the engine (uv-installed CLI) update independently, so the plugin can
+# reference a hook command the currently-installed engine does not implement
+# yet (or any longer). Without this guard, `exec`-ing a missing command exits
+# non-zero; on a PreToolUse hook a non-zero exit BLOCKS the tool call and the
+# session cannot use any tool. Probe first and no-op if the command is absent.
+if ! "$BIN" hook "$kind" --help >/dev/null 2>&1; then
+    exit 0
+fi
+
 exec "$BIN" hook "$kind" "$@"
