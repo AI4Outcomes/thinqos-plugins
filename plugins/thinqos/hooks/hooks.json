@@ -27,11 +27,6 @@
             "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/harvest.sh prime",
             "timeout": 10,
             "statusMessage": "🧠 thinqOS ▸ recalling your Mind…"
-          },
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/harvest.sh anti-fab",
-            "timeout": 10
           }
         ]
       }
@@ -59,18 +54,6 @@
             "timeout": 30,
             "async": true,
             "statusMessage": "🧠 thinqOS ▸ harvesting this session…"
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/harvest.sh guardrail-check",
-            "timeout": 10
           }
         ]
       }
