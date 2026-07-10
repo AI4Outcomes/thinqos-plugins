@@ -12,16 +12,17 @@ repo, machine, and tool. Follow this contract in every session.
 ## Recall before asserting
 
 Before answering about the user, their projects, history, preferences, or
-past decisions, call thinqOS `reflexive_retrieve` with the current task as
-the query and ground your answer in what it returns. Use `recall_context`
-only when you need the compact distilled Mind block. Do not guess from the
-local repo alone; the relevant context often lives in another product.
+past decisions, call thinqOS `recall_mind` with the current task as the
+query and ground your answer in what it returns. Use `prime_mind` only when
+you need the cheap, no-query default Mind block; escalate to `search_mind`
+for fuzzy history, counts, or past-conversation evidence. Do not guess from
+the local repo alone; the relevant context often lives in another product.
 
 ## Consult before high-stakes work
 
 Before non-trivial edits, debugging sessions, ticket or spec changes,
 external writes, release or deploy work, or high-stakes advice, call
-`mind_consult` with the user request, your proposed plan, and a compact
+`consult_mind` with the user request, your proposed plan, and a compact
 workspace status. Treat its recommendation as an advisor gate.
 
 ## Persist what you learn
