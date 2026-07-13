@@ -1,6 +1,7 @@
 {
   "mcpServers": {
     "thinqos": {
+      "type": "http",
       "url": "https://thinqos.com/mcp",
       "headers": {
         "Authorization": "Bearer ${user_config.pat}"
