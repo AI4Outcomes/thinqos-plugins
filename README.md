@@ -47,7 +47,7 @@ Gives Claude Code a persistent Mind backed by [thinqOS](https://thinqos.com):
    thinqos install
    ```
 
-Verify with `thinqos doctor --strict` (`thinqos_connectivity: pass` and no
+Verify with `thinqos doctor` (`thinqos_connectivity: pass` and no
 double-wired hooks).
 
 ## Notes
