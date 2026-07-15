@@ -19,7 +19,7 @@ if [ -n "$iv" ]; then
         's/.*"transcript_path"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -n 1)
     if [ -n "$tp" ]; then
         digest=$(printf '%s' "$tp" | (shasum 2>/dev/null || sha1sum) | cut -c1-40)
-        stamp="$HOME/.config/thinqos-harvest/debounce/$digest"
+        stamp="$HOME/.config/thinqos/debounce/$digest"
         if [ -n "$digest" ] && [ -f "$stamp" ]; then
             now=$(date +%s)
             # GNU form FIRST: on Linux `stat -f %m` can succeed and print a
@@ -37,9 +37,9 @@ if [ -n "$iv" ]; then
     fi
 fi
 
-BIN="$(command -v thinqos-harvest 2>/dev/null)"
-if [ -z "$BIN" ] && [ -x "$HOME/.local/bin/thinqos-harvest" ]; then
-    BIN="$HOME/.local/bin/thinqos-harvest"
+BIN="$(command -v thinqos 2>/dev/null)"
+if [ -z "$BIN" ] && [ -x "$HOME/.local/bin/thinqos" ]; then
+    BIN="$HOME/.local/bin/thinqos"
 fi
 if [ -z "$BIN" ]; then
     exit 0
