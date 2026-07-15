@@ -10,6 +10,8 @@ Gives Claude Code a persistent Mind backed by [thinqOS](https://thinqos.com):
 - **Resume**: cross-machine "pick up where you left off" context at session start.
 - **Capture**: every session is harvested into your Mind (final capture on Stop,
   crash-safe incremental capture mid-turn, debounced to at most one post per 90s).
+  Both capture hooks run asynchronously so network latency never blocks a Claude
+  Code command or session shutdown.
 - **Guardrails**: kept lessons warn before matching tool calls; the anti-fabrication
   standing rule fires on every prompt.
 - **MCP**: the thinqOS MCP tools (recall, consult, observe, believe, agents, and more).
