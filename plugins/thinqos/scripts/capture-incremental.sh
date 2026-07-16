@@ -37,9 +37,17 @@ if [ -n "$iv" ]; then
     fi
 fi
 
+# Resolution order (TOS-1649): canonical `thinqos` first, retired
+# `thinqos-harvest` as fallback for machines that have not upgraded yet.
 BIN="$(command -v thinqos 2>/dev/null)"
 if [ -z "$BIN" ] && [ -x "$HOME/.local/bin/thinqos" ]; then
     BIN="$HOME/.local/bin/thinqos"
+fi
+if [ -z "$BIN" ]; then
+    BIN="$(command -v thinqos-harvest 2>/dev/null)"
+fi
+if [ -z "$BIN" ] && [ -x "$HOME/.local/bin/thinqos-harvest" ]; then
+    BIN="$HOME/.local/bin/thinqos-harvest"
 fi
 if [ -z "$BIN" ]; then
     exit 0
