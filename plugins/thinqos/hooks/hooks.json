@@ -6,13 +6,13 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/harvest.sh prime-session",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/thinqos.sh prime-session",
             "timeout": 10,
             "statusMessage": "🧠 thinqOS ▸ recalling your Mind…"
           },
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/harvest.sh resume",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/thinqos.sh resume",
             "timeout": 10,
             "statusMessage": "🧠 thinqOS ▸ picking up where you left off…"
           }
@@ -24,7 +24,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/harvest.sh prime",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/thinqos.sh prime",
             "timeout": 10,
             "statusMessage": "🧠 thinqOS ▸ recalling your Mind…"
           }
@@ -40,7 +40,7 @@
             "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/capture-incremental.sh",
             "timeout": 30,
             "async": true,
-            "statusMessage": "🧠 thinqOS ▸ harvesting this session…"
+            "statusMessage": "🧠 thinqOS ▸ capturing this session…"
           }
         ]
       }
@@ -51,10 +51,10 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/harvest.sh capture",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/thinqos.sh capture",
             "timeout": 30,
             "async": true,
-            "statusMessage": "🧠 thinqOS ▸ harvesting this session…"
+            "statusMessage": "🧠 thinqOS ▸ capturing this session…"
           }
         ]
       }

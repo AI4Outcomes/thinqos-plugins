@@ -19,34 +19,40 @@ Gives Claude Code a persistent Mind backed by [thinqOS](https://thinqos.com):
 
 ## Install
 
-1. Install the engine (the plugin packages hooks and config; the CLI does the work):
+1. Install the CLI (the plugin packages hooks; the CLI configures the MCP connection and does the work):
 
    ```
-   uv tool install thinqos-harvest
+   uv tool install thinqos
    ```
 
-2. Add the marketplace and install the plugin (you will be prompted for your
-   thinqOS API key, created at thinqos.com under Settings):
+2. Configure thinqOS for Claude Code. The CLI uses your existing authenticated
+   thinqOS connection and installs one MCP registration:
+
+   ```
+   thinqos install
+   ```
+
+3. Add the marketplace and install the plugin. It supplies hooks only; it does
+   not create a second MCP connection or prompt for a separate token:
 
    ```
    /plugin marketplace add AI4Outcomes/thinqos-plugins
    /plugin install thinqos@thinqos-plugins
    ```
 
-3. If you previously ran `thinqos-harvest install` (settings.json-managed hooks),
-   re-run it once after enabling the plugin: it detects the plugin and removes the
-   old settings.json hook entries so nothing fires twice:
+4. Re-run the installer once after enabling the plugin. It detects the plugin
+   and removes any settings.json-managed hook entries so nothing fires twice:
 
    ```
-   thinqos-harvest install
+   thinqos install
    ```
 
-Verify with `thinqos-harvest doctor` (health: pass, `settings_env_key=pass`, no
+Verify with `thinqos doctor` (`thinqos_connectivity: pass` and no
 double-wired hooks).
 
 ## Notes
 
-- The plugin auto-updates via the marketplace; the engine self-updates daily
+- The plugin auto-updates via the marketplace; the CLI self-updates daily
   (stamp-gated) from the SessionStart hook.
-- Codex users: keep using `thinqos-harvest install --client codex`; this
+- Codex users: keep using `thinqos install --client codex`; this
   marketplace is Claude Code packaging only.
