@@ -1,0 +1,10 @@
+version: 2
+updates:
+  # The only dependencies this repo has are the actions in its own workflow.
+  # Keeping them current is what stops the validation gate from rotting.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: chore

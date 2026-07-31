@@ -1,12 +1,33 @@
 {
   "name": "thinqos-plugins",
-  "owner": { "name": "AI4Outcomes" },
   "description": "Official AI4Outcomes plugin marketplace: thinqOS Mind integration for Claude Code.",
+  "owner": {
+    "name": "AI4Outcomes",
+    "email": "support@thinqos.com",
+    "url": "https://thinqos.com"
+  },
   "plugins": [
     {
       "name": "thinqos",
+      "displayName": "thinqOS Mind",
       "source": "./plugins/thinqos",
-      "description": "thinqOS Mind for Claude Code: reflexive memory priming, cross-machine resume, session capture into your Mind, and the thinqOS MCP tools."
+      "description": "thinqOS Mind for Claude Code: reflexive memory priming, cross-machine resume, session capture into your Mind, and the thinqOS MCP tools. Requires a thinqOS account and the thinqos CLI (uv tool install thinqos).",
+      "category": "productivity",
+      "author": {
+        "name": "AI4Outcomes",
+        "email": "support@thinqos.com",
+        "url": "https://thinqos.com"
+      },
+      "homepage": "https://github.com/AI4Outcomes/thinqos-plugins#thinqos-mind-plugin",
+      "repository": "https://github.com/AI4Outcomes/thinqos-plugins",
+      "license": "MIT",
+      "keywords": [
+        "memory",
+        "thinqos",
+        "mind",
+        "capture",
+        "recall"
+      ]
     }
   ]
 }
