@@ -11,11 +11,23 @@ Gives Claude Code a persistent Mind backed by [thinqOS](https://thinqos.com):
 - **Capture**: every session is harvested into your Mind (final capture on Stop,
   crash-safe incremental capture mid-turn, debounced to at most one post per 90s).
   Both capture hooks run asynchronously so network latency never blocks a Claude
-  Code command or session shutdown.
+  Code command or session shutdown. See
+  [What gets captured](#what-gets-captured) for exactly what leaves your machine.
 - **Guardrails**: kept lessons warn before matching tool calls; the anti-fabrication
   standing rule fires on every prompt.
 - **MCP**: the thinqOS MCP tools (recall, consult, observe, believe, agents, and more).
 - **Skill**: `thinqos:remembering`, the Mind contract for recall/consult/persist discipline.
+
+## Requirements
+
+- **A thinqOS account.** This plugin is a thin client for the hosted thinqOS
+  service: it ships hooks only and does no work on its own. Without an account
+  and an API key, `thinqos install` has nothing to connect to.
+  [Sign up](https://thinqos.com/sign-up) · [Sign in](https://thinqos.com/sign-in) ·
+  [Pricing](https://thinqos.com/pricing)
+- **Python 3.13 or newer**, and [uv](https://docs.astral.sh/uv/) to install the CLI.
+- **Claude Code.** Codex and Grok Build are supported by the CLI directly; this
+  marketplace is Claude Code packaging only.
 
 ## Install
 
@@ -50,9 +62,70 @@ Gives Claude Code a persistent Mind backed by [thinqOS](https://thinqos.com):
 Verify with `thinqos doctor` (`thinqos_connectivity: pass` and no
 double-wired hooks).
 
+## What gets captured
+
+This plugin uploads your Claude Code session content to thinqOS. That is the
+product, not a side effect, so here is precisely what happens.
+
+**What is sent.** Session transcripts: your prompts, the assistant's responses,
+and tool calls with their results, along with the session id, working directory,
+and timestamps. Transport is HTTPS to `https://thinqos.com`, authenticated with
+your own API key. Data goes to your Mind and is scoped to your identity.
+
+**When it is sent.** On the `Stop` hook at the end of a turn, and on
+`PostToolUse` for crash-safe mid-session snapshots, debounced to at most one post
+per 90 seconds (`THINQOS_INCREMENTAL_MIN_INTERVAL_S`). Both run asynchronously.
+If the network is unavailable, payloads queue locally under `~/.config/thinqos`
+and are replayed later.
+
+**What is filtered before sending.** The privacy model is opt-out: the adapter
+captures everything except
+
+- content matching secret-shaped patterns (`.env` references, `api_key` /
+  `secret` / `password` / `token` assignments of 16 or more characters, and
+  `sk-…` style keys),
+- tool results larger than 32 KiB,
+- any session whose working directory matches your path denylist (below).
+
+This is a best-effort filter over a broad surface, not a guarantee. Treat it as
+defense in depth, not as a reason to run the plugin over a directory holding
+credentials.
+
+**Your data is governed by** the [thinqOS Privacy Policy](https://thinqos.com/privacy)
+and [Terms of Service](https://thinqos.com/terms).
+
+## Controlling and deleting your data
+
+- **Exclude directories from capture.** Create `~/.config/thinqos/denylist.txt`,
+  one substring per line (`#` starts a comment). Any session whose working
+  directory contains a listed substring is dropped before upload.
+
+  ```
+  # ~/.config/thinqos/denylist.txt
+  /clients/acme
+  /secrets
+  ```
+
+- **See what was captured**: `thinqos list`
+- **Delete one session** (not reversible): `thinqos forget <session_id>`
+- **Stop capturing entirely**: disable the plugin with `/plugin` and run
+  `thinqos uninstall` to remove the local hooks.
+
 ## Notes
 
 - The plugin auto-updates via the marketplace; the CLI self-updates daily
   (stamp-gated) from the SessionStart hook.
 - Codex users: keep using `thinqos install --client codex`; this
   marketplace is Claude Code packaging only.
+- Pointing at another thinqOS deployment: set `THINQOS_BASE_URL`.
+
+## Contributing and support
+
+Issues and pull requests are welcome on this repository. For account, billing,
+or data questions, contact support@thinqos.com.
+
+## License
+
+MIT. See [LICENSE](./LICENSE). The MIT license covers the plugin code in this
+repository; the hosted thinqOS service it connects to is governed separately by
+the [Terms of Service](https://thinqos.com/terms).

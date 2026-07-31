@@ -1,0 +1,72 @@
+name: Validate
+
+# This marketplace auto-updates onto users' machines: `thinqos install` registers
+# it with `autoUpdate: true`, so whatever lands on main reaches every installed
+# user with no review gate and no rollback. Everything that can brick a session
+# is gated here before merge.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Manifests, scripts, version bump
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          # Full history: the version-bump guard diffs against the PR base.
+          fetch-depth: 0
+
+      - name: Validate manifests (marketplace, plugin, hooks, skills)
+        run: python3 scripts/validate-manifests.py
+
+      - name: Ensure shellcheck is available
+        run: shellcheck --version || sudo apt-get install -y shellcheck
+
+      - name: Shellcheck hook scripts
+        run: |
+          files=$(git ls-files '*.sh')
+          if [ -z "$files" ]; then
+            echo "no shell scripts tracked; nothing to check"
+            exit 0
+          fi
+          echo "$files"
+          # shellcheck disable=SC2086
+          shellcheck $files
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      - name: Install Claude Code CLI
+        # Intentionally unpinned: this gate should notice a new manifest
+        # requirement in CI rather than in a user's broken session.
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Run `claude plugin validate` on every plugin
+        run: |
+          set -e
+          for dir in plugins/*/; do
+            echo "== ${dir%/}"
+            claude plugin validate "./${dir%/}"
+          done
+
+      - name: Version-bump guard
+        if: github.event_name == 'pull_request'
+        run: |
+          python3 scripts/check-version-bump.py \
+            "${{ github.event.pull_request.base.sha }}" \
+            "${{ github.event.pull_request.head.sha }}"
