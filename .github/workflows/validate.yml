@@ -56,9 +56,13 @@ jobs:
         # requirement in CI rather than in a user's broken session.
         run: npm install -g @anthropic-ai/claude-code
 
-      - name: Run `claude plugin validate` on every plugin
+      - name: Run `claude plugin validate` on the marketplace and every plugin
         run: |
           set -e
+          # A broken marketplace manifest is worse than a broken plugin: it
+          # takes the whole catalog down for every installed user at once.
+          echo "== marketplace"
+          claude plugin validate .
           for dir in plugins/*/; do
             echo "== ${dir%/}"
             claude plugin validate "./${dir%/}"
