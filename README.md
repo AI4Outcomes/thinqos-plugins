@@ -10,8 +10,8 @@ Gives Claude Code a persistent Mind backed by [thinqOS](https://thinqos.com):
 - **Resume**: cross-machine "pick up where you left off" context at session start.
 - **Capture**: every session is harvested into your Mind (final capture on Stop,
   crash-safe incremental capture mid-turn, debounced to at most one post per 90s).
-  Both capture hooks run asynchronously so network latency never blocks a Claude
-  Code command or session shutdown. See
+  Both capture hooks detach before doing any network work, so latency never
+  blocks a command or session shutdown on any host. See
   [What gets captured](#what-gets-captured) for exactly what leaves your machine.
 - **Guardrails**: kept lessons warn before matching tool calls; the anti-fabrication
   standing rule fires on every prompt.
@@ -53,7 +53,7 @@ Gives Claude Code a persistent Mind backed by [thinqOS](https://thinqos.com):
    ```
 
 4. Re-run the installer once after enabling the plugin. It detects the plugin
-   and removes any settings.json-managed hook entries so nothing fires twice:
+   and removes any settings-managed hook entries so nothing fires twice:
 
    ```
    thinqos install
@@ -61,6 +61,19 @@ Gives Claude Code a persistent Mind backed by [thinqOS](https://thinqos.com):
 
 Verify with `thinqos doctor` (`thinqos_connectivity: pass` and no
 double-wired hooks).
+
+### Codex
+
+Codex installs Claude marketplace plugins too, but it gates plugin hooks behind
+a per-source **Trust** toggle that defaults off and never prompts - an untrusted
+plugin hook simply never runs. So in Codex the CLI's own `~/.codex/hooks.json`
+entries are authoritative and the plugin's hooks stand down whenever they are
+present (TOS-2773). Run `thinqos install --client codex`; the plugin then adds
+its skills and MCP surface without double-wiring capture.
+
+Set `THINQOS_PLUGIN_FORCE_HOOKS=1` if you want the plugin's hooks to win in
+Codex anyway - only sensible when the CLI is not installed, and only after
+trusting them in Codex's hook review dialog.
 
 ## What gets captured
 
@@ -74,7 +87,7 @@ your own API key. Data goes to your Mind and is scoped to your identity.
 
 **When it is sent.** On the `Stop` hook at the end of a turn, and on
 `PostToolUse` for crash-safe mid-session snapshots, debounced to at most one post
-per 90 seconds (`THINQOS_INCREMENTAL_MIN_INTERVAL_S`). Both run asynchronously.
+per 90 seconds (`THINQOS_INCREMENTAL_MIN_INTERVAL_S`). Both detach first.
 If the network is unavailable, payloads queue locally under `~/.config/thinqos`
 and are replayed later.
 

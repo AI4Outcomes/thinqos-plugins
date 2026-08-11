@@ -9,7 +9,19 @@
 # uncertain (unparseable stdin, missing stamp, non-integer interval, no
 # usable stat) runs the engine, which performs the authoritative check.
 
+# Resolved at runtime from the host-supplied plugin root, so the linter
+# cannot follow it. lib-host.sh is linted on its own.
+# shellcheck source=/dev/null
+. "${CLAUDE_PLUGIN_ROOT:-$(dirname "$0")/..}/scripts/lib-host.sh"
+
 json=$(cat)
+
+# TOS-2773: yield to the CLI's own hooks where the CLI is the reliable wiring,
+# so capture posts once rather than twice.
+if thinqos_should_stand_down; then
+    exit 0
+fi
+
 iv="${THINQOS_INCREMENTAL_MIN_INTERVAL_S:-90}"
 case "$iv" in
     ''|*[!0-9]*) iv="" ;;
@@ -53,4 +65,14 @@ if [ -z "$BIN" ]; then
     exit 0
 fi
 export THINQOS_BASE_URL="${THINQOS_BASE_URL:-https://thinqos.com}"
-printf '%s' "$json" | exec "$BIN" hook capture-incremental
+
+# TOS-2773: hand the payload off on a temp file rather than a pipe. A pipe
+# would make this shell block on `printf` once the payload exceeds the pipe
+# buffer, which reintroduces exactly the critical-path stall TOS-1542 removed.
+payload="$(mktemp "${TMPDIR:-/tmp}/thinqos-capture.XXXXXX" 2>/dev/null)" || exit 0
+printf '%s' "$json" >"$payload" 2>/dev/null || {
+    rm -f "$payload"
+    exit 0
+}
+thinqos_detach "$payload" "$BIN" hook capture-incremental
+exit 0

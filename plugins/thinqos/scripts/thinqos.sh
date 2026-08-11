@@ -8,6 +8,17 @@
 # retired `thinqos-harvest` name so machines that have not upgraded the uv
 # tool yet keep priming/capturing instead of silently no-oping.
 
+# Resolved at runtime from the host-supplied plugin root, so the linter
+# cannot follow it. lib-host.sh is linted on its own.
+# shellcheck source=/dev/null
+. "${CLAUDE_PLUGIN_ROOT:-$(dirname "$0")/..}/scripts/lib-host.sh"
+
+# TOS-2773: yield to the CLI's own hooks where the CLI is the reliable wiring,
+# so prime/resume/capture each run once rather than twice.
+if thinqos_should_stand_down; then
+    exit 0
+fi
+
 BIN="$(command -v thinqos 2>/dev/null)"
 if [ -z "$BIN" ] && [ -x "$HOME/.local/bin/thinqos" ]; then
     BIN="$HOME/.local/bin/thinqos"
@@ -41,5 +52,22 @@ fi
 if ! "$BIN" hook "$kind" --help >/dev/null 2>&1; then
     exit 0
 fi
+
+# TOS-2773: capture posts over the network and must never hold a turn open.
+# It used to rely on `"async": true` in hooks.json, which Codex rejects
+# outright (skipping the hook entirely), so detach here instead - that works
+# on every host. prime/resume stay synchronous: their stdout IS the context
+# block the host injects, so backgrounding them would emit nothing.
+case "$kind" in
+    capture | capture-incremental)
+        payload="$(mktemp "${TMPDIR:-/tmp}/thinqos-capture.XXXXXX" 2>/dev/null)" || exit 0
+        cat >"$payload" 2>/dev/null || {
+            rm -f "$payload"
+            exit 0
+        }
+        thinqos_detach "$payload" "$BIN" hook "$kind" "$@"
+        exit 0
+        ;;
+esac
 
 exec "$BIN" hook "$kind" "$@"
