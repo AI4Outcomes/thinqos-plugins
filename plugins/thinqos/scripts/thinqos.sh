@@ -8,6 +8,9 @@
 # retired `thinqos-harvest` name so machines that have not upgraded the uv
 # tool yet keep priming/capturing instead of silently no-oping.
 
+# Resolved at runtime from the host-supplied plugin root, so the linter
+# cannot follow it. lib-host.sh is linted on its own.
+# shellcheck source=/dev/null
 . "${CLAUDE_PLUGIN_ROOT:-$(dirname "$0")/..}/scripts/lib-host.sh"
 
 # TOS-2773: yield to the CLI's own hooks where the CLI is the reliable wiring,

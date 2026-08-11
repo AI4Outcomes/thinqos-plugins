@@ -9,6 +9,9 @@
 # uncertain (unparseable stdin, missing stamp, non-integer interval, no
 # usable stat) runs the engine, which performs the authoritative check.
 
+# Resolved at runtime from the host-supplied plugin root, so the linter
+# cannot follow it. lib-host.sh is linted on its own.
+# shellcheck source=/dev/null
 . "${CLAUDE_PLUGIN_ROOT:-$(dirname "$0")/..}/scripts/lib-host.sh"
 
 json=$(cat)
