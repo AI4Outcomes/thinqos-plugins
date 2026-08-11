@@ -39,7 +39,6 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/capture-incremental.sh",
             "timeout": 30,
-            "async": true,
             "statusMessage": "🧠 thinqOS ▸ capturing this session…"
           }
         ]
@@ -53,7 +52,6 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/thinqos.sh capture",
             "timeout": 30,
-            "async": true,
             "statusMessage": "🧠 thinqOS ▸ capturing this session…"
           }
         ]
