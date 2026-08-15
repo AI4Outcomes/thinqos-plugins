@@ -130,6 +130,37 @@ def check_skills(plugin_dir: Path, rel: str) -> None:
                 fail(f"{rel}/skills/{child.name}/SKILL.md: frontmatter missing '{key}'")
 
 
+def check_codex_manifest(
+    plugin_dir: Path,
+    rel: str,
+    claude_manifest: dict[str, object],
+) -> None:
+    """Require an explicit Codex surface instead of falling back to Claude hooks."""
+    path = plugin_dir / ".codex-plugin" / "plugin.json"
+    manifest = load_json(path)
+    if not isinstance(manifest, dict):
+        if manifest is not None:
+            fail(f"{rel}/.codex-plugin/plugin.json: expected a JSON object")
+        return
+    if manifest.get("name") != claude_manifest.get("name"):
+        fail(
+            f"{rel}/.codex-plugin/plugin.json: 'name' must match the Claude manifest"
+        )
+    if manifest.get("version") != claude_manifest.get("version"):
+        fail(
+            f"{rel}/.codex-plugin/plugin.json: 'version' must match the Claude manifest"
+        )
+    if manifest.get("skills") != "./skills/":
+        fail(
+            f"{rel}/.codex-plugin/plugin.json: 'skills' must preserve the packaged skills"
+        )
+    if manifest.get("hooks") != {}:
+        fail(
+            f"{rel}/.codex-plugin/plugin.json: Codex hooks must be empty; "
+            "~/.codex/hooks.json is authoritative"
+        )
+
+
 def main() -> int:
     market = load_json(MARKETPLACE)
     if not isinstance(market, dict):
@@ -203,6 +234,7 @@ def main() -> int:
                     f"{rel}/.claude-plugin/plugin.json: 'version' is required. Without it "
                     f"the version-bump guard cannot protect releases."
                 )
+            check_codex_manifest(plugin_dir, rel, manifest)
         elif manifest is not None:
             fail(f"{rel}/.claude-plugin/plugin.json: expected a JSON object")
 
