@@ -1,7 +1,7 @@
 {
   "name": "thinqos",
   "displayName": "thinqOS Mind",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "thinqOS Mind for Claude Code: reflexive memory priming, cross-machine resume, session capture into your Mind, and thinqOS MCP tools. Requires the thinqos CLI (uv tool install thinqos).",
   "author": {
     "name": "AI4Outcomes",
@@ -10,6 +10,7 @@
   "homepage": "https://thinqos.com",
   "repository": "https://github.com/AI4Outcomes/thinqos-plugins",
   "license": "MIT",
+  "hooks": "./.claude-plugin/hooks.json",
   "keywords": [
     "memory",
     "thinqos",
