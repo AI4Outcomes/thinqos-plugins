@@ -72,8 +72,9 @@ only lifecycle wiring Codex loads; the five Claude-only hooks do not appear in
 Codex's Hooks screen. Run `thinqos install --client codex` to install and repair
 that authoritative wiring.
 
-The runtime stand-down in the hook scripts remains as backward compatibility
-for Codex caches older than plugin `0.2.4`.
+Claude's hook manifest lives under `.claude-plugin/`, outside Codex's default
+root hook discovery path. The runtime stand-down in the scripts remains as
+backward compatibility for Codex caches older than plugin `0.2.5`.
 
 ## What gets captured
 

@@ -65,33 +65,47 @@ def load_json(path: Path) -> object | None:
         return None
 
 
-def check_hooks(plugin_dir: Path, rel: str) -> None:
-    hooks_file = plugin_dir / "hooks" / "hooks.json"
-    if not hooks_file.exists():
-        return
+def check_hooks(
+    plugin_dir: Path,
+    rel: str,
+    claude_manifest: dict[str, object],
+) -> None:
+    expected_hook_path = "./.claude-plugin/hooks.json"
+    if claude_manifest.get("hooks") != expected_hook_path:
+        fail(
+            f"{rel}/.claude-plugin/plugin.json: 'hooks' must be "
+            f"{expected_hook_path!r} so Codex does not auto-discover Claude hooks"
+        )
+    root_hooks = plugin_dir / "hooks" / "hooks.json"
+    if root_hooks.exists():
+        fail(
+            f"{rel}/hooks/hooks.json: root hook discovery is shared with Codex; "
+            f"move Claude-only hooks to {expected_hook_path}"
+        )
+    hooks_file = plugin_dir / expected_hook_path
     data = load_json(hooks_file)
     if data is None:
         return
     if not isinstance(data, dict) or not isinstance(data.get("hooks"), dict):
-        fail(f"{rel}/hooks/hooks.json: expected a top-level 'hooks' object")
+        fail(f"{rel}/{expected_hook_path}: expected a top-level 'hooks' object")
         return
     for event, entries in data["hooks"].items():
         if not isinstance(entries, list):
-            fail(f"{rel}/hooks/hooks.json: '{event}' must be a list")
+            fail(f"{rel}/{expected_hook_path}: '{event}' must be a list")
             continue
         for entry in entries:
             for hook in entry.get("hooks", []) if isinstance(entry, dict) else []:
                 if not isinstance(hook, dict):
-                    fail(f"{rel}/hooks/hooks.json: '{event}' has a non-object hook")
+                    fail(f"{rel}/{expected_hook_path}: '{event}' has a non-object hook")
                     continue
                 if not hook.get("type"):
-                    fail(f"{rel}/hooks/hooks.json: '{event}' hook is missing 'type'")
+                    fail(f"{rel}/{expected_hook_path}: '{event}' hook is missing 'type'")
                 command = hook.get("command", "")
                 if hook.get("type") != "command" or not isinstance(command, str):
                     continue
                 if PLUGIN_ROOT_VAR not in command:
                     fail(
-                        f"{rel}/hooks/hooks.json: '{event}' command does not use "
+                        f"{rel}/{expected_hook_path}: '{event}' command does not use "
                         f"{PLUGIN_ROOT_VAR}, so it will not resolve once installed: {command}"
                     )
                     continue
@@ -100,7 +114,10 @@ def check_hooks(plugin_dir: Path, rel: str) -> None:
                 script_rel = tail.split()[0].strip('"') if tail.split() else ""
                 script = plugin_dir / script_rel
                 if not script.is_file():
-                    fail(f"{rel}/hooks/hooks.json: '{event}' points at missing script {script_rel}")
+                    fail(
+                        f"{rel}/{expected_hook_path}: '{event}' points at missing script "
+                        f"{script_rel}"
+                    )
                 elif not os.access(script, os.X_OK):
                     fail(
                         f"{rel}/{script_rel}: referenced by the '{event}' hook but not "
@@ -154,10 +171,57 @@ def check_codex_manifest(
         fail(
             f"{rel}/.codex-plugin/plugin.json: 'skills' must preserve the packaged skills"
         )
-    if manifest.get("hooks") != {}:
+    if "hooks" in manifest:
         fail(
-            f"{rel}/.codex-plugin/plugin.json: Codex hooks must be empty; "
-            "~/.codex/hooks.json is authoritative"
+            f"{rel}/.codex-plugin/plugin.json: 'hooks' is unsupported by Codex; "
+            "omit it and keep Claude hooks out of root discovery"
+        )
+    allowed = {
+        "id",
+        "name",
+        "version",
+        "description",
+        "skills",
+        "apps",
+        "mcpServers",
+        "interface",
+        "author",
+        "homepage",
+        "repository",
+        "license",
+        "keywords",
+    }
+    for key in sorted(set(manifest) - allowed):
+        fail(
+            f"{rel}/.codex-plugin/plugin.json: field {key!r} is unsupported by Codex"
+        )
+    interface = manifest.get("interface")
+    if not isinstance(interface, dict):
+        fail(f"{rel}/.codex-plugin/plugin.json: 'interface' must be an object")
+        return
+    for key in (
+        "displayName",
+        "shortDescription",
+        "longDescription",
+        "developerName",
+        "category",
+    ):
+        if not isinstance(interface.get(key), str) or not interface[key].strip():
+            fail(
+                f"{rel}/.codex-plugin/plugin.json: 'interface.{key}' must be a "
+                "non-empty string"
+            )
+    capabilities = interface.get("capabilities")
+    if not isinstance(capabilities, list) or not all(
+        isinstance(value, str) and value.strip() for value in capabilities
+    ):
+        fail(
+            f"{rel}/.codex-plugin/plugin.json: 'interface.capabilities' must be "
+            "an array of strings"
+        )
+    if "defaultPrompt" not in interface and "default_prompt" not in interface:
+        fail(
+            f"{rel}/.codex-plugin/plugin.json: 'interface.defaultPrompt' is required"
         )
 
 
@@ -235,10 +299,9 @@ def main() -> int:
                     f"the version-bump guard cannot protect releases."
                 )
             check_codex_manifest(plugin_dir, rel, manifest)
+            check_hooks(plugin_dir, rel, manifest)
         elif manifest is not None:
             fail(f"{rel}/.claude-plugin/plugin.json: expected a JSON object")
-
-        check_hooks(plugin_dir, rel)
         check_skills(plugin_dir, rel)
 
     print_report()
