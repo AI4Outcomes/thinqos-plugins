@@ -26,8 +26,9 @@ Gives Claude Code a persistent Mind backed by [thinqOS](https://thinqos.com):
   [Sign up](https://thinqos.com/sign-up) · [Sign in](https://thinqos.com/sign-in) ·
   [Pricing](https://thinqos.com/pricing)
 - **Python 3.13 or newer**, and [uv](https://docs.astral.sh/uv/) to install the CLI.
-- **Claude Code.** Codex and Grok Build are supported by the CLI directly; this
-  marketplace is Claude Code packaging only.
+- **Claude Code or Codex.** Claude uses the plugin hooks. Codex uses the
+  packaged `thinqos:remembering` skill while the CLI remains the single source
+  for lifecycle hooks. Grok Build is supported by the CLI directly.
 
 ## Install
 
@@ -64,16 +65,15 @@ double-wired hooks).
 
 ### Codex
 
-Codex installs Claude marketplace plugins too, but it gates plugin hooks behind
-a per-source **Trust** toggle that defaults off and never prompts - an untrusted
-plugin hook simply never runs. So in Codex the CLI's own `~/.codex/hooks.json`
-entries are authoritative and the plugin's hooks stand down whenever they are
-present (TOS-2773). Run `thinqos install --client codex`; the plugin then adds
-its skills and MCP surface without double-wiring capture.
+Codex installs this marketplace too. The package includes a Codex-specific
+manifest that exposes the `thinqos:remembering` skill and explicitly declares
+no plugin hooks. The CLI's own `~/.codex/hooks.json` entries are therefore the
+only lifecycle wiring Codex loads; the five Claude-only hooks do not appear in
+Codex's Hooks screen. Run `thinqos install --client codex` to install and repair
+that authoritative wiring.
 
-Set `THINQOS_PLUGIN_FORCE_HOOKS=1` if you want the plugin's hooks to win in
-Codex anyway - only sensible when the CLI is not installed, and only after
-trusting them in Codex's hook review dialog.
+The runtime stand-down in the hook scripts remains as backward compatibility
+for Codex caches older than plugin `0.2.4`.
 
 ## What gets captured
 
@@ -128,8 +128,8 @@ and [Terms of Service](https://thinqos.com/terms).
 
 - The plugin auto-updates via the marketplace; the CLI self-updates daily
   (stamp-gated) from the SessionStart hook.
-- Codex users: keep using `thinqos install --client codex`; this
-  marketplace is Claude Code packaging only.
+- Codex users: keep using `thinqos install --client codex`; the marketplace
+  contributes the Mind skill, while the CLI owns hooks and MCP wiring.
 - Pointing at another thinqOS deployment: set `THINQOS_BASE_URL`.
 
 ## Contributing and support
