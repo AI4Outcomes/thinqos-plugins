@@ -11,12 +11,17 @@ repo, machine, and tool. Follow this contract in every session.
 
 ## Recall before asserting
 
-Before answering about the user, their projects, history, preferences, or
-past decisions, call thinqOS `recall_mind` with the current task as the
-query and ground your answer in what it returns. Use `prime_mind` only when
-you need the cheap, no-query default Mind block; escalate to `search_mind`
-for fuzzy history, counts, or past-conversation evidence. Do not guess from
-the local repo alone; the relevant context often lives in another product.
+Before answering about the user, their projects, preferences, values, goals,
+constraints, patterns, or past decisions, call thinqOS `recall_mind` with the
+current task as the query and ground your answer in what it returns. Use
+`prime_mind` for the cheap startup/default Mind block and `search_mind` when
+the question needs a wider selection of distilled Mind constructs.
+
+Episodic Memory is a separate evidence plane. Use `conversation_search` for
+dated past-conversation evidence and `conversation_aggregate` for counts or
+time buckets. A turn may use both planes, but do not treat `search_mind` as a
+conversation search. Do not guess from the local repo alone; relevant context
+often lives in another product.
 
 ## Consult before high-stakes work
 
@@ -43,7 +48,8 @@ flags, and states against current code before acting on them.
 
 ## Attribution
 
-When announcing a thinqOS operation, use the form "🧠 thinqOS ▸ <verb>…"
-(recalling, consulting, observing, harvesting). When an answer draws on
+When announcing a thinqOS operation, use the form
+"🧠 thinqOS ▸ thinqing (<verb>)…" (recalling, consulting, observing,
+capturing). When an answer draws on
 recalled or primed thinqOS Mind content, say so explicitly ("per your
 thinqOS Mind, …"). Never present Mind-supplied facts as your own knowledge.
