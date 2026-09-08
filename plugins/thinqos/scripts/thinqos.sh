@@ -43,6 +43,12 @@ fi
 shift
 
 if [ "$kind" = "prime-session" ]; then
+    # TOS-4490: the plugin auto-updates onto every installed machine; the CLI
+    # only moves when someone runs the upgrade. Say so once per session, on
+    # stderr, rather than letting new hooks fail silently against an old CLI.
+    # SessionStart is the only place this runs - per-capture warnings would be
+    # noise nobody reads. Never blocks: this stays exit-0 either way.
+    thinqos_warn_if_cli_too_old "$BIN"
     ("$BIN" hook self-update >/dev/null 2>&1 &)
     exec "$BIN" hook prime "$@"
 fi
