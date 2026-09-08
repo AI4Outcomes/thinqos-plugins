@@ -46,6 +46,12 @@ jobs:
           # shellcheck disable=SC2086
           shellcheck $files
 
+      - name: CLI compatibility conformance tests
+        # Run under dash, not bash: the hooks execute under whatever /bin/sh
+        # the user's machine provides, so a bashism that passes in a developer
+        # shell and breaks in dash must fail here rather than in a session.
+        run: dash tests/test-cli-compat.sh
+
       - name: Set up Node
         uses: actions/setup-node@v7
         with:
