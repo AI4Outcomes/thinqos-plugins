@@ -84,15 +84,15 @@ thinqos_detach() {
 # newer, and say what in the comment - a floor nobody can justify is a floor
 # that gets bumped reflexively and locks users out for no reason.
 #
-# 1.8.6: first release carrying the installation-attempt marker
-# (`thinqos_install` on captured sessions) and the persisted per-source
-# capture-history policy, both of which the connect UI's setup verification
-# depends on.
-THINQOS_MIN_CLI_VERSION="1.8.6"
+# 1.9.0 is the floor because it is the FIRST release that can report its own
+# version at all. `--version` landed in it, so no earlier CLI can be measured,
+# and a floor below 1.9.0 would be unfalsifiable: every 1.8.x user would be
+# warned regardless of what their CLI could actually do. 1.9.0 also carries
+# the installation-attempt marker and the persisted per-source capture-history
+# policy that the connect UI's setup verification depends on.
+THINQOS_MIN_CLI_VERSION="1.9.0"
 
 # Print the installed CLI's version, or nothing if it cannot be determined.
-# `--version` landed alongside this floor, so a CLI that does not answer it is
-# by construction older than the floor.
 thinqos_cli_version() {
     "$1" --version 2>/dev/null | awk 'NR==1 {print $NF}'
 }
@@ -126,15 +126,25 @@ EOF
 # Warn ONCE per session, on stderr, if the installed CLI is below the floor.
 # Called only from the session-start path: a warning on every PostToolUse
 # capture would be unreadable noise and would train people to ignore it.
+#
+# The two failure cases get DIFFERENT wording, because they are different
+# facts and conflating them would be a lie to whichever user got the wrong
+# one. A CLI that cannot report a version might be fully capable and simply
+# too old to say so; a CLI that reports 1.8.x is definitely behind. Saying
+# "your CLI is too old" to the first user asserts something unmeasured.
 thinqos_warn_if_cli_too_old() {
     bin="$1"
     found="$(thinqos_cli_version "$bin")"
     if thinqos_version_at_least "$found" "$THINQOS_MIN_CLI_VERSION"; then
         return 0
     fi
+    if [ -z "$found" ]; then
+        echo "thinqOS plugin: the installed CLI does not report a version, so it predates $THINQOS_MIN_CLI_VERSION." >&2
+    else
+        echo "thinqOS plugin: the installed CLI is $found, below the $THINQOS_MIN_CLI_VERSION this plugin expects." >&2
+    fi
     # Name what is actually degraded, not just "please upgrade". A user who
     # cannot see the consequence has no basis to decide whether to act now.
-    echo "thinqOS plugin: the installed CLI is ${found:-older than $THINQOS_MIN_CLI_VERSION}, below the $THINQOS_MIN_CLI_VERSION this plugin expects." >&2
     echo "thinqOS plugin: capture and recall still work; setup verification in the web app cannot confirm this machine until you upgrade." >&2
     echo "thinqOS plugin: upgrade with: uv tool install --upgrade thinqos" >&2
 }

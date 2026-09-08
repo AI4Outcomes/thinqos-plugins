@@ -32,23 +32,23 @@ check_at_least() {
 }
 
 echo "== thinqos_version_at_least"
-check_at_least "1.8.6" "1.8.6" yes
-check_at_least "1.8.7" "1.8.6" yes
-check_at_least "1.9.0" "1.8.6" yes
-check_at_least "2.0.0" "1.8.6" yes
-check_at_least "1.8.5" "1.8.6" no
-check_at_least "1.7.9" "1.8.6" no
-check_at_least "0.9.9" "1.8.6" no
+check_at_least "1.9.0" "1.9.0" yes
+check_at_least "1.9.1" "1.9.0" yes
+check_at_least "1.10.0" "1.9.0" yes
+check_at_least "2.0.0" "1.9.0" yes
+check_at_least "1.8.6" "1.9.0" no
+check_at_least "1.8.9" "1.9.0" no
+check_at_least "0.9.9" "1.9.0" no
 # Two-component and one-component versions: missing parts read as 0.
-check_at_least "2.0" "1.8.6" yes
-check_at_least "1.8" "1.8.6" no
-check_at_least "2" "1.8.6" yes
+check_at_least "2.0" "1.9.0" yes
+check_at_least "1.8" "1.9.0" no
+check_at_least "2" "1.9.0" yes
 # String comparison would call 1.10.0 older than 1.9.0. Numeric must not.
 check_at_least "1.10.0" "1.9.0" yes
 # Anything unparseable is treated as below the floor: warn rather than guess.
-check_at_least "" "1.8.6" no
-check_at_least "not-a-version" "1.8.6" no
-check_at_least "1.8.6rc1" "1.8.6" no
+check_at_least "" "1.9.0" no
+check_at_least "not-a-version" "1.9.0" no
+check_at_least "1.9.0rc1" "1.9.0" no
 
 echo "== thinqos_cli_version"
 tmp="$(mktemp -d)"
@@ -57,14 +57,14 @@ trap 'rm -rf "$tmp"' EXIT
 # A CLI that answers --version in the shape `thinqos 1.8.6`.
 cat >"$tmp/good" <<'SH'
 #!/bin/sh
-echo "thinqos 1.8.6"
+echo "thinqos 1.9.0"
 SH
 chmod +x "$tmp/good"
 got="$(thinqos_cli_version "$tmp/good")"
-if [ "$got" = "1.8.6" ]; then
-    pass "parses 'thinqos 1.8.6' -> 1.8.6"
+if [ "$got" = "1.9.0" ]; then
+    pass "parses 'thinqos 1.9.0' -> 1.9.0"
 else
-    fail "parsed '$got', expected 1.8.6"
+    fail "parsed '$got', expected 1.9.0"
 fi
 
 # A CLI predating --version: Click writes usage to stderr and exits nonzero.
@@ -90,6 +90,27 @@ if [ "$rc" -eq 0 ]; then
 else
     fail "expected exit 0 for an old CLI, got $rc"
 fi
+# A CLI that cannot report a version must NOT be told it "is" some version:
+# that is an assertion about something the plugin never measured.
+if printf '%s' "$out" | grep -q 'does not report a version'; then
+    pass "an unmeasurable CLI is described as unmeasurable, not as too old"
+else
+    fail "expected the unmeasurable wording, got: $out"
+fi
+
+# A CLI that DOES report a below-floor version gets the specific wording.
+cat >"$tmp/behind" <<'SH'
+#!/bin/sh
+echo "thinqos 1.8.6"
+SH
+chmod +x "$tmp/behind"
+behind_out="$(thinqos_warn_if_cli_too_old "$tmp/behind" 2>&1)"
+if printf '%s' "$behind_out" | grep -q 'is 1.8.6, below'; then
+    pass "a below-floor CLI is named by its actual version"
+else
+    fail "expected the below-floor wording, got: $behind_out"
+fi
+
 # The message has to be actionable: name the fix, not just the problem.
 if printf '%s' "$out" | grep -q 'uv tool install --upgrade thinqos'; then
     pass "warning names the upgrade command"
