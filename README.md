@@ -83,8 +83,9 @@ product, not a side effect, so here is precisely what happens.
 
 **What is sent.** Session transcripts: your prompts, the assistant's responses,
 and tool calls with their results, along with the session id, working directory,
-and timestamps. Transport is HTTPS to `https://thinqos.com`, authenticated with
-your own API key. Data goes to your Mind and is scoped to your identity.
+and timestamps. Transport is HTTPS to the thinqOS server this machine is
+connected to (`https://app.thinqos.com` unless you connected to another
+deployment), authenticated with your own API key. Data goes to your Mind and is scoped to your identity.
 
 **When it is sent.** On the `Stop` hook at the end of a turn, and on
 `PostToolUse` for crash-safe mid-session snapshots, debounced to at most one post
