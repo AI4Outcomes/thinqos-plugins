@@ -64,7 +64,7 @@ fi
 if [ -z "$BIN" ]; then
     exit 0
 fi
-export THINQOS_BASE_URL="${THINQOS_BASE_URL:-https://thinqos.com}"
+# No THINQOS_BASE_URL default: see thinqos.sh.
 
 # TOS-2773: hand the payload off on a temp file rather than a pipe. A pipe
 # would make this shell block on `printf` once the payload exceeds the pipe

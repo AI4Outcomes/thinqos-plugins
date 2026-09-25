@@ -34,7 +34,8 @@ if [ -z "$BIN" ]; then
     exit 0
 fi
 
-export THINQOS_BASE_URL="${THINQOS_BASE_URL:-https://thinqos.com}"
+# No THINQOS_BASE_URL default here: the CLI resolves the server from this
+# machine's active connection, and a server that disagrees with it drops the key.
 
 kind="$1"
 if [ -z "$kind" ]; then
