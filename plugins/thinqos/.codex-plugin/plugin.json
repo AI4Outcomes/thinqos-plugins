@@ -1,6 +1,6 @@
 {
   "name": "thinqos",
-  "version": "0.2.9",
+  "version": "0.3.0",
   "description": "thinqOS Mind for Codex: persistent recall, resume, capture, and writeback through the authoritative thinqOS CLI wiring.",
   "author": {
     "name": "AI4Outcomes",

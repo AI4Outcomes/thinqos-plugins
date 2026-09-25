@@ -225,6 +225,36 @@ def check_codex_manifest(
         )
 
 
+def check_portable_package(plugin_dir: Path, rel: str, pname: str) -> None:
+    """Rules for the Agent Plugins package the JSON schemas cannot express."""
+    manifest = load_json(plugin_dir / "plugin.json")
+    if isinstance(manifest, dict):
+        if manifest.get("name") != pname:
+            fail(f"{rel}/plugin.json: 'name' must match the marketplace entry {pname!r}")
+        openai = manifest.get("extensions", {}).get("com.openai", {})
+        if isinstance(openai, dict) and "hooks" in openai:
+            fail(
+                f"{rel}/plugin.json: extensions.com.openai.hooks would load Claude hooks "
+                "in Codex, where the thinqos CLI owns hooks"
+            )
+    mcp = load_json(plugin_dir / "mcp.json")
+    if isinstance(mcp, dict):
+        servers = mcp.get("mcpServers")
+        # The key must equal the CLI's `mcp_servers.thinqos` entry. Codex lets a
+        # same-named config entry win, so a CLI-disabled server stays disabled and a
+        # CLI-enabled one is not duplicated. Any other name adds a second server.
+        if not isinstance(servers, dict) or set(servers) != {"thinqos"}:
+            fail(f"{rel}/mcp.json: declare exactly one server named 'thinqos'")
+        for name, server in (servers or {}).items():
+            if isinstance(server, dict) and server.get("headers"):
+                fail(f"{rel}/mcp.json: server {name!r} must not carry headers (no secrets)")
+    if (plugin_dir / ".mcp.json").exists():
+        fail(
+            f"{rel}/.mcp.json: Claude Code would register a second thinqOS server beside "
+            "the CLI's (TOS-1548); the CLI owns MCP there"
+        )
+
+
 def main() -> int:
     market = load_json(MARKETPLACE)
     if not isinstance(market, dict):
@@ -303,6 +333,7 @@ def main() -> int:
         elif manifest is not None:
             fail(f"{rel}/.claude-plugin/plugin.json: expected a JSON object")
         check_skills(plugin_dir, rel)
+        check_portable_package(plugin_dir, rel, pname)
 
     print_report()
     return 1 if errors else 0

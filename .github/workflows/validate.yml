@@ -32,6 +32,17 @@ jobs:
       - name: Validate manifests (marketplace, plugin, hooks, skills)
         run: python3 scripts/validate-manifests.py
 
+      - name: Validate the Agent Plugins package against the published schemas
+        # plugin.json and mcp.json are what ChatGPT, Codex, Cursor and Copilot
+        # read. Both schemas are closed, so an unknown field rejects the plugin.
+        run: |
+          set -e
+          base=https://agent-plugins.org/schemas/1.0.0
+          for dir in plugins/*/; do
+            pipx run check-jsonschema --schemafile "$base/plugin.schema.json" "${dir}plugin.json"
+            pipx run check-jsonschema --schemafile "$base/mcp.schema.json" "${dir}mcp.json"
+          done
+
       - name: Ensure shellcheck is available
         run: shellcheck --version || sudo apt-get install -y shellcheck
 
