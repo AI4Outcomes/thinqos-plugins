@@ -15,8 +15,10 @@ Gives Claude Code a persistent Mind backed by [thinqOS](https://thinqos.com):
   [What gets captured](#what-gets-captured) for exactly what leaves your machine.
 - **Guardrails**: kept lessons warn before matching tool calls; the anti-fabrication
   standing rule fires on every prompt.
-- **MCP**: the thinqOS MCP tools (recall, consult, observe, believe, agents, and more).
-- **Skill**: `thinqos:remembering`, the Mind contract for recall/consult/persist discipline.
+- **MCP**: the thinqOS MCP tools (`recall`, `remember`, `forget`, `check`, `advise`,
+  `history`, `ask_agent`, `status`, and the generic `thinqos_query`/`thinqos_create`/
+  `thinqos_update`/`thinqos_delete`/`thinqos_action` verbs that reach everything else).
+- **Skill**: `thinqos:remembering`, the Mind contract for recall/advise/persist discipline.
 
 ## Requirements
 
