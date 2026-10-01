@@ -25,7 +25,7 @@ Gives Claude Code a persistent Mind backed by [thinqOS](https://thinqos.com):
 - **A thinqOS account.** This plugin is a thin client for the hosted thinqOS
   service: it ships hooks only and does no work on its own. Without an account
   and an API key, `thinqos install` has nothing to connect to.
-  [Sign up](https://thinqos.com/sign-up) · [Sign in](https://thinqos.com/sign-in) ·
+  [Request access](https://app.thinqos.com/request-access) · [Sign in](https://app.thinqos.com/sign-in) ·
   [Pricing](https://thinqos.com/pricing)
 - **Python 3.13 or newer**, and [uv](https://docs.astral.sh/uv/) to install the CLI.
 - **Claude Code or Codex.** Claude uses the plugin hooks. Codex uses the
