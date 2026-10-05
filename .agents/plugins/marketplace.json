@@ -1,0 +1,33 @@
+{
+  "name": "thinqos-plugins",
+  "description": "Official AI4Outcomes plugin marketplace: thinqOS Mind for Codex.",
+  "owner": {
+    "name": "AI4Outcomes",
+    "email": "support@thinqos.com",
+    "url": "https://thinqos.com"
+  },
+  "plugins": [
+    {
+      "name": "thinqos",
+      "displayName": "thinqOS Mind",
+      "source": "./codex/thinqos",
+      "description": "thinqOS Mind for Codex: persistent recall, resume, capture, and writeback through the authoritative thinqOS CLI wiring.",
+      "category": "productivity",
+      "author": {
+        "name": "AI4Outcomes",
+        "email": "support@thinqos.com",
+        "url": "https://thinqos.com"
+      },
+      "homepage": "https://github.com/AI4Outcomes/thinqos-plugins#thinqos-mind-plugin",
+      "repository": "https://github.com/AI4Outcomes/thinqos-plugins",
+      "license": "MIT",
+      "keywords": [
+        "memory",
+        "thinqos",
+        "mind",
+        "capture",
+        "recall"
+      ]
+    }
+  ]
+}

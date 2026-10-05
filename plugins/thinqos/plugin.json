@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "thinqos",
-  "version": "0.4.1",
+  "version": "0.4.3",
   "description": "thinqOS Mind: the persistent memory your AI tools share. Recall what matters, consult before consequential work, and keep what you decide, through the thinqOS MCP tools.",
   "author": {
     "name": "AI4Outcomes",
