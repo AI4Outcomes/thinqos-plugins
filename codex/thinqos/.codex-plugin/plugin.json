@@ -17,6 +17,15 @@
     "recall"
   ],
   "skills": "./skills/",
+  "mcpServers": {
+    "thinqos": {
+      "command": "thinqos",
+      "args": [
+        "mcp",
+        "serve"
+      ]
+    }
+  },
   "interface": {
     "displayName": "thinqOS Mind",
     "shortDescription": "Persistent Mind and recall for Codex.",

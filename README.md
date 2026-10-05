@@ -1,10 +1,10 @@
 # thinqos-plugins
 
-Official AI4Outcomes plugin marketplace for Claude Code.
+Official AI4Outcomes plugin marketplace for Claude Code and Codex.
 
 ## thinqOS Mind plugin
 
-Gives Claude Code a persistent Mind backed by [thinqOS](https://thinqos.com):
+Gives Claude Code and Codex a persistent Mind backed by [thinqOS](https://thinqos.com):
 
 - **Prime**: reflexive memory recall injected at session start and on every prompt.
 - **Resume**: cross-machine "pick up where you left off" context at session start.
@@ -23,9 +23,9 @@ Gives Claude Code a persistent Mind backed by [thinqOS](https://thinqos.com):
 ## Requirements
 
 - **A thinqOS account.** This plugin is a thin client for the hosted thinqOS
-  service: it ships hooks only and does no work on its own. Without an account
+  service: it supplies host configuration and does no work on its own. Without an account
   and an API key, `thinqos install` has nothing to connect to.
-  [Sign up](https://thinqos.com/sign-up) · [Sign in](https://thinqos.com/sign-in) ·
+  [Request access](https://app.thinqos.com/request-access) · [Sign in](https://app.thinqos.com/sign-in) ·
   [Pricing](https://thinqos.com/pricing)
 - **Python 3.13 or newer**, and [uv](https://docs.astral.sh/uv/) to install the CLI.
 - **Claude Code or Codex.** Claude uses the plugin hooks. Codex uses the
@@ -44,7 +44,7 @@ Gives Claude Code a persistent Mind backed by [thinqOS](https://thinqos.com):
    thinqOS connection and installs one MCP registration:
 
    ```
-   thinqos install
+   thinqos install --client claude
    ```
 
 3. Add the marketplace and install the plugin. It supplies hooks only; it does
@@ -59,7 +59,7 @@ Gives Claude Code a persistent Mind backed by [thinqOS](https://thinqos.com):
    and removes any settings-managed hook entries so nothing fires twice:
 
    ```
-   thinqos install
+   thinqos install --client claude
    ```
 
 Verify with `thinqos doctor` (`thinqos_connectivity: pass` and no
@@ -67,12 +67,24 @@ double-wired hooks).
 
 ### Codex
 
-Codex installs this marketplace too. The package includes a Codex-specific
-manifest that exposes the `thinqos:remembering` skill and explicitly declares
-no plugin hooks. The CLI's own `~/.codex/hooks.json` entries are therefore the
-only lifecycle wiring Codex loads; the five Claude-only hooks do not appear in
-Codex's Hooks screen. Run `thinqos install --client codex` to install and repair
-that authoritative wiring.
+The official Codex plugin owns the MCP server and launches `thinqos mcp serve`.
+Codex selects the native package through `.agents/plugins/marketplace.json`;
+web and Claude connections retain their own portable package.
+The CLI uses your paired deployment and credential together and owns the native
+lifecycle hooks in `~/.codex/hooks.json`.
+
+Upgrade the CLI before installing plugin `0.4.3`, then verify that its transport
+command is available:
+
+```
+uv tool upgrade thinqos
+thinqos mcp serve --help
+thinqos install --client codex
+```
+
+The installer installs the official plugin, removes the obsolete direct MCP
+registration, and preserves other servers. If hook commands changed, open
+Codex's `/hooks` screen and approve User config. Verify with `thinqos doctor`.
 
 Claude's hook manifest lives under `.claude-plugin/`, outside Codex's default
 root hook discovery path. The runtime stand-down in the scripts remains as
@@ -80,7 +92,7 @@ backward compatibility for Codex caches older than plugin `0.2.5`.
 
 ## What gets captured
 
-This plugin uploads your Claude Code session content to thinqOS. That is the
+The plugin and CLI capture your Claude Code or Codex session content into thinqOS. That is the
 product, not a side effect, so here is precisely what happens.
 
 **What is sent.** Session transcripts: your prompts, the assistant's responses,
@@ -125,7 +137,7 @@ and [Terms of Service](https://thinqos.com/terms).
 
 - **See what was captured**: `thinqos list`
 - **Delete one session** (not reversible): `thinqos forget <session_id>`
-- **Stop capturing entirely**: disable the plugin with `/plugin` and run
+- **Stop capturing entirely**: disable the plugin in your host and run
   `thinqos uninstall` to remove the local hooks.
 
 ## Notes
@@ -133,8 +145,9 @@ and [Terms of Service](https://thinqos.com/terms).
 - The plugin auto-updates via the marketplace; the CLI self-updates daily
   (stamp-gated) from the SessionStart hook.
 - Codex users: keep using `thinqos install --client codex`; the marketplace
-  contributes the Mind skill, while the CLI owns hooks and MCP wiring.
-- Pointing at another thinqOS deployment: set `THINQOS_BASE_URL`.
+  owns MCP, while the CLI resolves the paired connection and owns native hooks.
+- To select another deployment, use `thinqos install --client codex --base-url <URL>`
+  with that deployment's authentication. The plugin follows the paired connection.
 
 ## Contributing and support
 

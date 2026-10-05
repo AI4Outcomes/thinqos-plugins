@@ -151,6 +151,8 @@ def check_codex_manifest(
     plugin_dir: Path,
     rel: str,
     claude_manifest: dict[str, object],
+    *,
+    native: bool = False,
 ) -> None:
     """Require an explicit Codex surface instead of falling back to Claude hooks."""
     path = plugin_dir / ".codex-plugin" / "plugin.json"
@@ -160,17 +162,19 @@ def check_codex_manifest(
             fail(f"{rel}/.codex-plugin/plugin.json: expected a JSON object")
         return
     if manifest.get("name") != claude_manifest.get("name"):
-        fail(
-            f"{rel}/.codex-plugin/plugin.json: 'name' must match the Claude manifest"
-        )
+        fail(f"{rel}/.codex-plugin/plugin.json: 'name' must match the Claude manifest")
     if manifest.get("version") != claude_manifest.get("version"):
-        fail(
-            f"{rel}/.codex-plugin/plugin.json: 'version' must match the Claude manifest"
-        )
+        fail(f"{rel}/.codex-plugin/plugin.json: 'version' must match the Claude manifest")
     if manifest.get("skills") != "./skills/":
+        fail(f"{rel}/.codex-plugin/plugin.json: 'skills' must preserve the packaged skills")
+    expected = {"thinqos": {"command": "thinqos", "args": ["mcp", "serve"]}}
+    if native and manifest.get("mcpServers") != expected:
         fail(
-            f"{rel}/.codex-plugin/plugin.json: 'skills' must preserve the packaged skills"
+            f"{rel}/.codex-plugin/plugin.json: 'mcpServers' must use the "
+            "credential-free CLI transport so setup selects the deployment"
         )
+    if not native and "mcpServers" in manifest:
+        fail(f"{rel}: portable Codex overlays cannot override mcp.json; omit ignored MCP wiring")
     if "hooks" in manifest:
         fail(
             f"{rel}/.codex-plugin/plugin.json: 'hooks' is unsupported by Codex; "
@@ -192,9 +196,7 @@ def check_codex_manifest(
         "keywords",
     }
     for key in sorted(set(manifest) - allowed):
-        fail(
-            f"{rel}/.codex-plugin/plugin.json: field {key!r} is unsupported by Codex"
-        )
+        fail(f"{rel}/.codex-plugin/plugin.json: field {key!r} is unsupported by Codex")
     interface = manifest.get("interface")
     if not isinstance(interface, dict):
         fail(f"{rel}/.codex-plugin/plugin.json: 'interface' must be an object")
@@ -207,22 +209,16 @@ def check_codex_manifest(
         "category",
     ):
         if not isinstance(interface.get(key), str) or not interface[key].strip():
-            fail(
-                f"{rel}/.codex-plugin/plugin.json: 'interface.{key}' must be a "
-                "non-empty string"
-            )
+            fail(f"{rel}/.codex-plugin/plugin.json: 'interface.{key}' must be a non-empty string")
     capabilities = interface.get("capabilities")
     if not isinstance(capabilities, list) or not all(
         isinstance(value, str) and value.strip() for value in capabilities
     ):
         fail(
-            f"{rel}/.codex-plugin/plugin.json: 'interface.capabilities' must be "
-            "an array of strings"
+            f"{rel}/.codex-plugin/plugin.json: 'interface.capabilities' must be an array of strings"
         )
     if "defaultPrompt" not in interface and "default_prompt" not in interface:
-        fail(
-            f"{rel}/.codex-plugin/plugin.json: 'interface.defaultPrompt' is required"
-        )
+        fail(f"{rel}/.codex-plugin/plugin.json: 'interface.defaultPrompt' is required")
 
 
 def check_portable_package(plugin_dir: Path, rel: str, pname: str) -> None:
@@ -335,6 +331,24 @@ def main() -> int:
         check_skills(plugin_dir, rel)
         check_portable_package(plugin_dir, rel, pname)
 
+    codex_market = load_json(REPO_ROOT / ".agents/plugins/marketplace.json")
+    if not isinstance(codex_market, dict) or codex_market.get("name") != name:
+        fail("Codex marketplace must preserve the official marketplace identity")
+    else:
+        entries = codex_market.get("plugins")
+        if not isinstance(entries, list) or len(entries) != 1:
+            fail("Codex marketplace must select exactly one native thinqos package")
+        else:
+            entry = entries[0]
+            if entry.get("name") != "thinqos" or entry.get("source") != "./codex/thinqos":
+                fail("Codex marketplace must select ./codex/thinqos as thinqos")
+            native = REPO_ROOT / "codex/thinqos"
+            if (native / "plugin.json").exists():
+                fail("Codex native package must not contain a portable root plugin.json")
+            portable_manifest = load_json(REPO_ROOT / "plugins/thinqos/.claude-plugin/plugin.json")
+            if isinstance(portable_manifest, dict):
+                check_codex_manifest(native, "codex/thinqos", portable_manifest, native=True)
+            check_skills(native, "codex/thinqos")
     print_report()
     return 1 if errors else 0
 
