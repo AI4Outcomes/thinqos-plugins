@@ -4,7 +4,8 @@ Official AI4Outcomes plugin marketplace for Claude Code and Codex.
 
 ## thinqOS Mind plugin
 
-Gives Claude Code and Codex a persistent Mind backed by [thinqOS](https://thinqos.com):
+Connects Claude Code and Codex to your persistent Mind, authorized resources and
+agents in [thinqOS](https://thinqos.com):
 
 - **Prime**: reflexive memory recall injected at session start and on every prompt.
 - **Resume**: cross-machine "pick up where you left off" context at session start.
@@ -18,7 +19,13 @@ Gives Claude Code and Codex a persistent Mind backed by [thinqOS](https://thinqo
 - **MCP**: the thinqOS MCP tools (`recall`, `remember`, `forget`, `check`, `advise`,
   `history`, `ask_agent`, `status`, and the generic `thinqos_query`/`thinqos_create`/
   `thinqos_update`/`thinqos_delete`/`thinqos_action` verbs that reach everything else).
-- **Skill**: `thinqos:remembering`, the Mind contract for recall/advise/persist discipline.
+- **Operations**: discover current resources with `thinqos_query` and
+  `describe=true`, then use the matching authorized operation. Supported
+  operations, permission, account setup and successful execution are separate facts.
+- **Consultation**: use `ask_agent` to ask thinqOS Help or another reachable
+  agent to do work using its own authorized capabilities and connections.
+- **Skill**: `thinqos:remembering`, the shared operational and Mind contract for
+  resource discovery, agent consultation and recall/advise/persist discipline.
 
 ## Requirements
 
@@ -73,7 +80,7 @@ web and Claude connections retain their own portable package.
 The CLI uses your paired deployment and credential together and owns the native
 lifecycle hooks in `~/.codex/hooks.json`.
 
-Upgrade the CLI before installing plugin `0.4.3`, then verify that its transport
+Upgrade the CLI before installing plugin `0.4.4`, then verify that its transport
 command is available:
 
 ```

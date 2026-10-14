@@ -1,7 +1,7 @@
 {
   "name": "thinqos",
-  "version": "0.4.3",
-  "description": "thinqOS Mind for Codex: persistent recall, resume, capture, and writeback through the authoritative thinqOS CLI wiring.",
+  "version": "0.4.4",
+  "description": "thinqOS for Codex: Mind recall, resume, capture and writeback through the thinqos CLI, plus authorized resource management and agent consultation through MCP.",
   "author": {
     "name": "AI4Outcomes",
     "email": "support@thinqos.com"
@@ -29,7 +29,7 @@
   "interface": {
     "displayName": "thinqOS Mind",
     "shortDescription": "Persistent Mind and recall for Codex.",
-    "longDescription": "Use your thinqOS Mind in Codex while the thinqOS CLI owns lifecycle capture and recall hooks.",
+    "longDescription": "Use your thinqOS Mind, manage authorized resources and consult thinqOS Help or your other agents in Codex. The thinqos CLI owns lifecycle capture and recall hooks.",
     "developerName": "AI4Outcomes",
     "category": "Productivity",
     "capabilities": [

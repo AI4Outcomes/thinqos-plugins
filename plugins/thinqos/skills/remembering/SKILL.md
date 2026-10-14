@@ -1,11 +1,13 @@
 ---
 name: remembering
-description: "The thinqOS Mind contract: how to recall, consult, and persist durable memory. Use whenever deciding what to remember, what to recall, or whether to consult the Mind before high-stakes work."
+description: "The thinqOS operational and Mind contract: resource discovery, authorized actions, agent consultation, recall and durable memory. Use when working through thinqOS, explaining its connected capabilities, or deciding what to recall, remember or consult."
 ---
 
 ## thinqOS cognitive contract
 
-Contract v2.0.1 (5fd764d55f3c5cc18fc12eeaa8f9392cd8f4c9a95f599e53d2b80975723e687b).
+Contract v2.1.0 (a1e936952d2d43e9d9256acade503c32f0793ef589ff68ad6d698156c7321aa0).
+
+thinqOS also runs agents and manages resources. Connected Claude, ChatGPT and Codex can use its tools to do authorized work, not just read or save the Mind. thinqos_query with describe=true and no resource returns current resources and operational knowledge; add resource for its exact fields, views and actions. Use the matching create, update, delete or action verb for direct work. To consult thinqOS itself, resolve its Help agent with thinqos_query resource=agents q=thinqOS, then ask_agent with the returned id; discover other agents the same way. Agents can use their own authorized tools and connections. Check discovery before denying a capability; distinguish supported operations, user permission, connection setup and runtime failure. Discovery grants no permission and proves no execution. Verify writes by reading them back; a queued job is not completed work. Connecting does not grant all past host chats or the host's subscription allowance.
 
 thinqOS is the user's durable Mind, not a substitute for current evidence. Before a personal assertion about the user, their projects, preferences, patterns, or past decisions, retrieve relevant context instead of guessing. Use recall for what the Mind holds: depth quick for cheap ambient context, normal for a query-focused lookup, deep only for the widest search. Use history for dated episodic evidence, and history with mode count for counts or time buckets. Before consequential work such as non-trivial edits, ticket/spec changes, external writes, release/deploy work, or high-stakes advice, call advise with the request, proposed plan, and compact available workspace/tool context; treat its recommendation as an advisor gate. Capture durable user decisions, corrections, and verified outcomes with their source and whether they came from the user or assistant. Do not persist transient chatter or turn an assistant assertion into a user fact. remember with kind note confirms durable source persistence and may queue extraction; queued extraction is not learned. Captured evidence can remain recall-searchable when its default extraction mode is none, so zero beliefs is not an extraction failure receipt. remember with kind fact immediately records one user-confirmed structured fact. Never fabricate facts or historical evidence that the appropriate retrieval did not return.
 
