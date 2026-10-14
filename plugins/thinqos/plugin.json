@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "thinqos",
-  "version": "0.4.3",
-  "description": "thinqOS Mind: the persistent memory your AI tools share. Recall what matters, consult before consequential work, and keep what you decide, through the thinqOS MCP tools.",
+  "version": "0.4.4",
+  "description": "Use your thinqOS Mind, manage authorized resources and consult your thinqOS agents from your AI tools through MCP.",
   "author": {
     "name": "AI4Outcomes",
     "email": "support@thinqos.com",
@@ -23,7 +23,7 @@
       "interface": {
         "displayName": "thinqOS Mind",
         "shortDescription": "Your persistent Mind across AI tools.",
-        "longDescription": "Connects your thinqOS Mind so the assistant can recall your preferences, decisions and project context, consult it before consequential work, and record what you decide. Requires a thinqOS account.",
+        "longDescription": "Connects your thinqOS Mind, resource management and agent consultation. Recall your preferences and decisions, consult the Mind before consequential work, manage resources you are authorized to change, or ask thinqOS Help and your other agents to do work. Current operations and permissions are checked through the connected tools. Requires a thinqOS account.",
         "developerName": "AI4Outcomes",
         "category": "Productivity",
         "capabilities": [
