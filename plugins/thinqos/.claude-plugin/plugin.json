@@ -1,7 +1,7 @@
 {
   "name": "thinqos",
   "displayName": "thinqOS Mind",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "thinqOS for Claude Code: Mind recall, resume and capture, authorized resource management and consultation with thinqOS Help and your other agents through MCP. Requires the thinqos CLI (uv tool install thinqos).",
   "author": {
     "name": "AI4Outcomes",

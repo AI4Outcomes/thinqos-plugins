@@ -59,7 +59,7 @@ def load_json(path: Path) -> object | None:
         fail(f"{path.relative_to(REPO_ROOT)}: missing")
         return None
     try:
-        return json.loads(path.read_text())
+        return json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
         fail(f"{path.relative_to(REPO_ROOT)}: invalid JSON: {exc}")
         return None
@@ -228,6 +228,24 @@ def check_portable_package(plugin_dir: Path, rel: str, pname: str) -> None:
         if manifest.get("name") != pname:
             fail(f"{rel}/plugin.json: 'name' must match the marketplace entry {pname!r}")
         openai = manifest.get("extensions", {}).get("com.openai", {})
+        interface = openai.get("interface") if isinstance(openai, dict) else None
+        prefix = f"{rel}/plugin.json: OpenAI submission metadata"
+        if not isinstance(interface, dict):
+            fail(f"{prefix} requires interface")
+        else:
+            subtitle = interface.get("shortDescription")
+            if not isinstance(subtitle, str) or not 0 < len(subtitle) <= 30:
+                fail(f"{prefix}: subtitle must contain 1 to 30 characters")
+            support = interface.get("supportURL")
+            if not isinstance(support, str) or not support.startswith("https://"):
+                fail(f"{prefix}: supportURL must be an HTTPS URL")
+            logo = interface.get("logo")
+            if not isinstance(logo, str) or not logo.startswith("./"):
+                fail(f"{prefix}: logo must reference a bundled file")
+            else:
+                icon = (plugin_dir / logo).resolve()
+                if not icon.is_relative_to(plugin_dir.resolve()) or not icon.is_file():
+                    fail(f"{prefix}: logo must reference an existing bundled file")
         if isinstance(openai, dict) and "hooks" in openai:
             fail(
                 f"{rel}/plugin.json: extensions.com.openai.hooks would load Claude hooks "
