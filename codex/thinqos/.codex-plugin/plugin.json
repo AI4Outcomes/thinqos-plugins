@@ -1,6 +1,6 @@
 {
   "name": "thinqos",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "description": "thinqOS for Codex: Mind recall, resume, capture and writeback through the thinqos CLI, plus authorized resource management and agent consultation through MCP.",
   "author": {
     "name": "AI4Outcomes",

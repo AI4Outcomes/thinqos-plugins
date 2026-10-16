@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "thinqos",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "description": "Use your thinqOS Mind, manage authorized resources and consult your thinqOS agents from your AI tools through MCP.",
   "author": {
     "name": "AI4Outcomes",
