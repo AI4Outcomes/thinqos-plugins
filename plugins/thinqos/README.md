@@ -8,6 +8,19 @@ thinqOS gives your AI a Mind of your own: what you have told it, what you decide
 - **Skill** (`skills/remembering`): tells the assistant when to look something up in your Mind, when to ask it before acting, and when to save what it learned.
 - **Hooks for Claude Code** (`.claude-plugin/hooks.json`): bring relevant memory in at the start of a session and with each prompt, and save the session to your Mind as you work. They run the thinqOS command-line tool, which you install once with `uv tool install thinqos` and `thinqos install`. On Codex the command-line tool installs its own hooks, so this plugin adds none there.
 
+## ChatGPT compatibility
+
+Importing this portable MCP package directly into ChatGPT makes it desktop-only,
+even though its server uses HTTPS. ChatGPT web and mobile need a web-compatible
+plugin and access to its registered app. Directory submission, private archive
+installation, service authorization and successful capture are separate checks.
+
+For the correct public or private archive, see the repository's
+[delivery instructions](../../README.md#chatgpt-delivery-targets). A private
+registered-app reference must not be submitted to the public directory. Verify
+thinqOS tools in a new chat and check persistence independently before relying
+on automatic memory.
+
 ## Requirements
 
 A thinqOS account with preview access. Request access at https://thinqos.com/get-started.

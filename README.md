@@ -76,7 +76,7 @@ double-wired hooks).
 
 The official Codex plugin owns the MCP server and launches `thinqos mcp serve`.
 Codex selects the native package through `.agents/plugins/marketplace.json`;
-web and Claude connections retain their own portable package.
+the portable remote-MCP package has a separate delivery path described below.
 The CLI uses your paired deployment and credential together and owns the native
 lifecycle hooks in `~/.codex/hooks.json`.
 
@@ -96,6 +96,55 @@ Codex's `/hooks` screen and approve User config. Verify with `thinqos doctor`.
 Claude's hook manifest lives under `.claude-plugin/`, outside Codex's default
 root hook discovery path. The runtime stand-down in the scripts remains as
 backward compatibility for Codex caches older than plugin `0.2.5`.
+
+## ChatGPT delivery targets
+
+A direct archive import containing `mcp.json` is **desktop-only in ChatGPT**, even
+when the server uses HTTPS. It does not make the tools available in ChatGPT web
+or mobile. Installing the CLI or a repository package does not publish a plugin
+in the OpenAI directory.
+
+Web and mobile require a web-compatible plugin available to the account, plus
+access to its registered app and an authenticated thinqOS connection. Verify
+actual tools in a new chat before relying on recall or automatic capture. A
+ChatGPT memory notification is not a thinqOS persistence receipt. The remembering
+skill saves useful facts through available tools; it does not provide background
+access to all ChatGPT chats or a continuous transcript stream.
+
+### Build the correct archive
+
+Run these commands from the canonical thinqos repository. Both exports include
+the canonical remembering skill and icon and refuse to overwrite an existing ZIP.
+
+For **OpenAI directory submission**:
+
+```
+python tools/thinqos-plugin/build.py --export-openai /tmp/thinqos-directory.zip
+```
+
+This archive declares the remote MCP server. Complete connection, domain and tool
+checks in the publisher dashboard, then follow review and publication. A valid
+ZIP is not proof of approval, publication or working web tools. Directly importing
+this same ZIP as a personal plugin still makes it desktop-only.
+
+For **private web distribution referencing an existing registered app**:
+
+```
+python tools/thinqos-plugin/build.py --export-private-web /tmp/thinqos-private-web.zip --app-id asdk_app_FROM_EXISTING_APP
+```
+
+Replace the example app ID with the actual existing registered app ID. This
+export contains an app reference instead of a direct MCP declaration or hooks.
+It creates no app, grants no access and does not authenticate the connection.
+The referenced app must already be available to the intended account. Use the
+existing plugin's supported update controls when replacing its package; the
+create-plugin form does not update an installed plugin.
+
+**Never submit the private reference archive to the public directory.** OpenAI
+currently excludes app references from directory ZIP submissions.
+
+Sources: [ChatGPT plugin management](https://learn.chatgpt.com/docs/enterprise/plugin-management)
+and [OpenAI submission requirements](https://developers.openai.com/plugins/deploy/submission).
 
 ## What gets captured
 
