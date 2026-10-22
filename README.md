@@ -7,7 +7,9 @@ Official AI4Outcomes plugin marketplace for Claude Code and Codex.
 Connects Claude Code and Codex to your persistent Mind, authorized resources and
 agents in [thinqOS](https://thinqos.com):
 
-- **Prime**: reflexive memory recall injected at session start and on every prompt.
+- **Prime**: reflexive memory recall injected at session start (and again after a
+  compaction or `/clear`, when the host drops the conversation), then a short
+  per-prompt lookup keyed on what you just asked.
 - **Resume**: cross-machine "pick up where you left off" context at session start.
 - **Capture**: every session is harvested into your Mind (final capture on Stop,
   crash-safe incremental capture mid-turn, debounced to at most one post per 90s).
