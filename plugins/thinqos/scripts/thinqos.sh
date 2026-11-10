@@ -19,7 +19,15 @@ if thinqos_should_stand_down; then
     exit 0
 fi
 
-BIN="$(command -v thinqos 2>/dev/null)"
+# Windows (Git Bash): the CLI installs a thinqos.cmd launcher because uv's own
+# thinqos.exe is unsigned and Application Control may block it. Prefer it.
+BIN=""
+if [ -f "$HOME/.local/bin/thinqos.cmd" ]; then
+    BIN="$HOME/.local/bin/thinqos.cmd"
+fi
+if [ -z "$BIN" ]; then
+    BIN="$(command -v thinqos 2>/dev/null)"
+fi
 if [ -z "$BIN" ] && [ -x "$HOME/.local/bin/thinqos" ]; then
     BIN="$HOME/.local/bin/thinqos"
 fi
