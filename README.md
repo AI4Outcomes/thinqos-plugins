@@ -19,13 +19,13 @@ agents in [thinqOS](https://thinqos.com):
 - **Guardrails**: kept lessons warn before matching tool calls; the anti-fabrication
   standing rule fires on every prompt.
 - **MCP**: the thinqOS MCP tools (`recall`, `remember`, `forget`, `check`, `advise`,
-  `history`, `ask_agent`, `status`, and the generic `thinqos_query`/`thinqos_create`/
+  `history`, `ask`, `status`, and the generic `thinqos_query`/`thinqos_create`/
   `thinqos_update`/`thinqos_delete`/`thinqos_action` verbs that reach everything else).
 - **Operations**: discover current resources with `thinqos_query` and
   `describe=true`, then use the matching authorized operation. Supported
   operations, permission, account setup and successful execution are separate facts.
-- **Consultation**: use `ask_agent` to ask thinqOS Help or another reachable
-  agent to do work using its own authorized capabilities and connections.
+- **Asking**: use `ask` to reach your own Subconscious (`to="subconscious"`),
+  thinqOS Help (`to="help"`), another agent or one of your contacts.
 - **Skill**: `thinqos:remembering`, the shared operational and Mind contract for
   resource discovery, agent consultation and recall/advise/persist discipline.
 
